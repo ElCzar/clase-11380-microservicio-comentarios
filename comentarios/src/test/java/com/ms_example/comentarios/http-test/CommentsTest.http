@@ -1,0 +1,47 @@
+ 
+### Login with Basic User
+# @name loginUser
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}  
+
+# Variables de entorno
+@baseUrl = http://localhost:8082
+@authToken = Bearer {{ loginUser.response.body.accessToken }}
+
+### Obtener lista de servicios
+# @name getServices
+
+GET {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: {{ authToken }}
+
+###
+POST {{baseUrl}}/api/services/392012f6-21aa-4f1f-b2f6-c71c015f4aad/comments
+Content-Type: application/json
+Authorization: {{ authToken }}
+
+{
+  "serviceId": "392012f6-21aa-4f1f-b2f6-c71c015f4aad",
+  "profileId": 1,
+  "rating": 4.7,
+  "content": "Excelente servicio, muy recomendado para todos"
+}
+
+###
+
+GET {{baseUrl}}/api/comments/service-id/1423716264
+Content-Type: application/json
+Authorization: {{ authToken }}
+
+###
+
+
+
+
+
+

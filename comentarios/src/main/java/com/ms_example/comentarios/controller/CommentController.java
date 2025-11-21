@@ -1,6 +1,7 @@
 package com.ms_example.comentarios.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,9 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/api/comments")
 public class CommentController {
 
     private final CommentService commentService;
@@ -42,6 +42,14 @@ public class CommentController {
         return commentService.getCommentByServiceId(id);
     }
 
+    @GetMapping("/service-uuid/{serviceUuid}")
+    public List<Comment> getCommentByServiceUuid(@PathVariable String serviceUuid) {
+        // Convertir UUID a Long usando el mismo método que al guardar
+        UUID uuid = UUID.fromString(serviceUuid);
+        Long serviceLongId = Math.abs((long) uuid.hashCode());
+        return commentService.getCommentByServiceId(serviceLongId);
+    }
+
     @GetMapping("/profile-id/{id}")
     public List<Comment> getCommentByProfileId(@PathVariable Long id) {
         return commentService.getCommentByProfileId(id);
@@ -54,7 +62,7 @@ public class CommentController {
 
     @PutMapping("/update/{id}")
     public Comment updateComment(@PathVariable Long id, @RequestBody Comment comment) {
-        if(commentService.getCommentsById(id) == null) {
+        if (commentService.getCommentsById(id) == null) {
             return null;
         }
         return commentService.updateComment(id, comment);
@@ -62,11 +70,11 @@ public class CommentController {
 
     @DeleteMapping("/delete/{id}")
     public Boolean deleteComment(@PathVariable Long id) {
-        if(commentService.deleteComment(id)) {
+        if (commentService.deleteComment(id)) {
             return true;
-        } 
+        }
 
         return false;
     }
-    
+
 }

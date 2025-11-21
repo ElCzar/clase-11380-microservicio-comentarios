@@ -14,11 +14,41 @@ spring:
     show-sql: true
   h2:
     console:
-      enabled: true  
+      enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
+  cloud:
+    stream:
+      # General Kafka Configuration
+      kafka:
+        binder:
+          brokers: localhost:9092
+          auto-create-topics: true
+          configuration:
+            "[key.serializer]": org.apache.kafka.common.serialization.StringSerializer
+            "[value.serializer]": org.springframework.kafka.support.serializer.JsonSerializer
+            "[key.deserializer]": org.apache.kafka.common.serialization.StringDeserializer
+            "[value.deserializer]": org.apache.kafka.common.serialization.StringDeserializer
+            "[spring.json.trusted.packages]": "*"
+      bindings:
+        # Consumer binding for service responses FROM marketplace
+        serviceResponse-in-0:
+          destination: service-response-topic
+          content-type: text/plain
+          consumer:
+            use-native-decoding: false
+        # Producer binding for service requests TO marketplace
+        serviceRequest-out-0:
+          destination: service-request-topic
+          content-type: application/json
 
 server:
   port: 8082  
 
+# Eureka Client Configuration
 eureka:
     client:
         service-url:
@@ -26,3 +56,38 @@ eureka:
         register-with-eureka: true
     instance:
         prefer-ip-address: true
+
+# Keycloak Configuration
+keycloak:
+  realm: microservices-ecosystem
+  auth-server-url: http://localhost:8180
+  ssl-required: none
+  resource: ordenpago-service
+  credentials:
+    secret: kuYJVLbl6T0uJX0YYw8jAD9Nt7f48vAf
+  use-resource-role-mappings: true
+  bearer-only: true
+
+
+# Kafka Topics Configuration
+kafka:
+  topics:
+    service-request: service-request-topic
+    service-response: service-response-topic
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # Exposes monitoring for every endpoint
+        # through /actuator/metrics
+        include: "*"
+
+  endpoint:
+    health:
+      # /actuator/health
+      show-details: always
+
+  info:
+    env:
+      enabled: true

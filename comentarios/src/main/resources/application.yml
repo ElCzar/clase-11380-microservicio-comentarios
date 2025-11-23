@@ -20,6 +20,10 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
+  
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
   cloud:
     stream:
       # General Kafka Configuration

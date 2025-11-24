@@ -1,0 +1,92 @@
+spring:
+  application:
+    name: microservicio-comentarios-test
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  h2:
+    console:
+      enabled: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Configuración para tests - usar un issuer de prueba
+          issuer-uri: http://localhost:8180/realms/microservices-ecosystem
+          jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
+  
+  # Configuración de Kafka para tests
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: ${spring.embedded.kafka.brokers}
+          auto-create-topics: true
+          configuration:
+            "[key.serializer]": org.apache.kafka.common.serialization.StringSerializer
+            "[value.serializer]": org.springframework.kafka.support.serializer.JsonSerializer
+            "[key.deserializer]": org.apache.kafka.common.serialization.StringDeserializer
+            "[value.deserializer]": org.apache.kafka.common.serialization.StringDeserializer
+            "[spring.json.trusted.packages]": "*"
+      bindings:
+        serviceResponse-in-0:
+          destination: service-response-topic-test
+          content-type: text/plain
+          consumer:
+            use-native-decoding: false
+        serviceRequest-out-0:
+          destination: service-request-topic-test
+          content-type: application/json
+
+server:
+  port: 0  # Puerto aleatorio para tests
+
+# Deshabilitar Eureka en tests
+eureka:
+  client:
+    enabled: false
+
+# Keycloak Configuration para tests
+keycloak:
+  realm: microservices-ecosystem
+  auth-server-url: http://localhost:8180
+  ssl-required: none
+  resource: comentarios-service
+  credentials:
+    secret: test-secret
+  use-resource-role-mappings: true
+  bearer-only: true
+
+# Kafka Topics Configuration
+kafka:
+  topics:
+    service-request: service-request-topic-test
+    service-response: service-response-topic-test
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+# Logging para debugging de tests
+logging:
+  level:
+    com.ms_example.comentarios: DEBUG
+    org.springframework.kafka: INFO
+    org.springframework.security: DEBUG

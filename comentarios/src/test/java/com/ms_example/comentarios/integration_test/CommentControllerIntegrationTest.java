@@ -99,7 +99,7 @@ class CommentControllerIntegrationTest extends BaseIntegrationTest {
 
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertTrue(result.stream().allMatch(c -> c.getServiceId().equals(serviceId)));
+        assertTrue(result.stream().allMatch(c -> c.getServiceUuid().equals(String.valueOf(serviceId))));
     }
 
     
@@ -182,7 +182,7 @@ class CommentControllerIntegrationTest extends BaseIntegrationTest {
         assertNotNull(result.getId());
         assertEquals("Este es un comentario de prueba creado vía POST", result.getContent());
         assertEquals(new BigDecimal("4.5"), result.getRating());
-        assertEquals(12345L, result.getServiceId());
+        assertEquals("12345", result.getServiceUuid());
         assertEquals(1L, result.getProfileId());
         assertEquals(1, commentRepository.count());
     }
@@ -250,7 +250,7 @@ class CommentControllerIntegrationTest extends BaseIntegrationTest {
     private Comment createTestComment(Long profileId, Long serviceId, BigDecimal rating, String content) {
         Comment comment = new Comment();
         comment.setProfileId(profileId);
-        comment.setServiceId(serviceId);
+        comment.setServiceUuid(String.valueOf(serviceId));
         comment.setRating(rating);
         comment.setContent(content);
         return comment;

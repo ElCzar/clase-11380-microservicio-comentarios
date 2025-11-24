@@ -21,12 +21,13 @@ Content-Type: application/json
 Authorization: {{ authToken }}
 
 ###
-POST {{baseUrl}}/api/services/4f83b8e6-86a8-4ee7-ac5a-bb5febaa978f/comments
+# @name createComment
+POST {{baseUrl}}/api/services/da545479-72b3-438d-95fd-fda1842e7367/comments
 Content-Type: application/json
 Authorization: {{ authToken }}
 
 {
-  "serviceId": "4f83b8e6-86a8-4ee7-ac5a-bb5febaa978f",
+  "serviceId": "da545479-72b3-438d-95fd-fda1842e7367",
   "profileId": 1,
   "rating": 5.0,
   "content": "Me encanta este lugar, la comida es deliciosa y el ambiente es acogedor."
@@ -34,7 +35,9 @@ Authorization: {{ authToken }}
 
 ###
 
-GET {{baseUrl}}/api/comments/service-id/1898194223
+@serviceId = {{ createComment.response.body.serviceIdHash }}
+
+GET {{baseUrl}}/api/comments/service-id/{{serviceId}}
 Content-Type: application/json
 Authorization: {{ authToken }}
 

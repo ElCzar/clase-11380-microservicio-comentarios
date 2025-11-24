@@ -1,35 +1,38 @@
 spring:
   application:
-    name: microservicio-comentarios
+    name: microservicio-comentarios-test
 
   datasource:
-    url: jdbc:h2:mem:comments
+    url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
-    username: admin
-    password: admin123
+    username: sa
+    password: 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
   h2:
     console:
-      enabled: true
+      enabled: false
+
   security:
     oauth2:
       resourceserver:
         jwt:
+          # Configuración para tests - usar un issuer de prueba
+          issuer-uri: http://localhost:8180/realms/microservices-ecosystem
           jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
   
+  # Configuración de Kafka para tests
   kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
 
   cloud:
     stream:
-      # General Kafka Configuration
       kafka:
         binder:
-          brokers: localhost:9092
+          brokers: ${spring.embedded.kafka.brokers}
           auto-create-topics: true
           configuration:
             "[key.serializer]": org.apache.kafka.common.serialization.StringSerializer
@@ -38,65 +41,52 @@ spring:
             "[value.deserializer]": org.apache.kafka.common.serialization.StringDeserializer
             "[spring.json.trusted.packages]": "*"
       bindings:
-        # Consumer binding for service responses FROM marketplace
         serviceResponse-in-0:
-          destination: service-response-topic
+          destination: service-response-topic-test
           content-type: text/plain
           consumer:
             use-native-decoding: false
-        # Producer binding for service requests TO marketplace
         serviceRequest-out-0:
-          destination: service-request-topic
-          content-type: application/json
-        # Producer binding for comment responses TO marketplace
-        commentResponse-out-0:
-          destination: comments-response
+          destination: service-request-topic-test
           content-type: application/json
 
 server:
-  port: 8082  
+  port: 0  # Puerto aleatorio para tests
 
-# Eureka Client Configuration
+# Deshabilitar Eureka en tests
 eureka:
-    client:
-        service-url:
-            defaultZone: http://localhost:8761/eureka/
-        register-with-eureka: true
-    instance:
-        prefer-ip-address: true
+  client:
+    enabled: false
 
-# Keycloak Configuration
+# Keycloak Configuration para tests
 keycloak:
   realm: microservices-ecosystem
   auth-server-url: http://localhost:8180
   ssl-required: none
-  resource: ordenpago-service
+  resource: comentarios-service
   credentials:
-    secret: kuYJVLbl6T0uJX0YYw8jAD9Nt7f48vAf
+    secret: test-secret
   use-resource-role-mappings: true
   bearer-only: true
-
 
 # Kafka Topics Configuration
 kafka:
   topics:
-    service-request: service-request-topic
-    service-response: service-response-topic
-    comments-response: comments-response
+    service-request: service-request-topic-test
+    service-response: service-response-topic-test
 
 management:
   endpoints:
     web:
       exposure:
-        # Exposes monitoring for every endpoint
-        # through /actuator/metrics
-        include: "*"
-
+        include: health,info
   endpoint:
     health:
-      # /actuator/health
       show-details: always
 
-  info:
-    env:
-      enabled: true
+# Logging para debugging de tests
+logging:
+  level:
+    com.ms_example.comentarios: DEBUG
+    org.springframework.kafka: INFO
+    org.springframework.security: DEBUG

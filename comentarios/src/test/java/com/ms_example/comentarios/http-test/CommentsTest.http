@@ -1,0 +1,50 @@
+ 
+### Login with Basic User
+# @name loginUser
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}  
+
+# Variables de entorno
+@baseUrl = http://localhost:8082
+@authToken = Bearer {{ loginUser.response.body.accessToken }}
+
+### Obtener lista de servicios
+# @name getServices
+
+GET {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: {{ authToken }}
+
+###
+# @name createComment
+POST {{baseUrl}}/api/services/da545479-72b3-438d-95fd-fda1842e7367/comments
+Content-Type: application/json
+Authorization: {{ authToken }}
+
+{
+  "serviceId": "da545479-72b3-438d-95fd-fda1842e7367",
+  "profileId": 1,
+  "rating": 5.0,
+  "content": "Me encanta este lugar, la comida es deliciosa y el ambiente es acogedor."
+}
+
+###
+
+@serviceId = {{ createComment.response.body.serviceIdHash }}
+
+GET {{baseUrl}}/api/comments/service-id/{{serviceId}}
+Content-Type: application/json
+Authorization: {{ authToken }}
+
+###
+
+
+
+
+
+

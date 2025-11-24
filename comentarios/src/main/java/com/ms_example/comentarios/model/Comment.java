@@ -24,13 +24,16 @@ import lombok.Setter;
 @Entity
 @Table(name = "comments")
 public class Comment {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
-    @Column(name = "service_id")
-    private Long serviceId;
+
+    @Column(name = "service_uuid")
+    private String serviceUuid;
+
+    @Column(name = "service_id_hash")
+    private Long serviceIdHash;
 
     @Column(name = "profile_id")
     private Long profileId;

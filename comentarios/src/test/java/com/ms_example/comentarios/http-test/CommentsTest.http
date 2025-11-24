@@ -21,20 +21,20 @@ Content-Type: application/json
 Authorization: {{ authToken }}
 
 ###
-POST {{baseUrl}}/api/services/392012f6-21aa-4f1f-b2f6-c71c015f4aad/comments
+POST {{baseUrl}}/api/services/4f83b8e6-86a8-4ee7-ac5a-bb5febaa978f/comments
 Content-Type: application/json
 Authorization: {{ authToken }}
 
 {
-  "serviceId": "392012f6-21aa-4f1f-b2f6-c71c015f4aad",
+  "serviceId": "4f83b8e6-86a8-4ee7-ac5a-bb5febaa978f",
   "profileId": 1,
-  "rating": 4.7,
-  "content": "Excelente servicio, muy recomendado para todos"
+  "rating": 5.0,
+  "content": "Me encanta este lugar, la comida es deliciosa y el ambiente es acogedor."
 }
 
 ###
 
-GET {{baseUrl}}/api/comments/service-id/1423716264
+GET {{baseUrl}}/api/comments/service-id/1898194223
 Content-Type: application/json
 Authorization: {{ authToken }}
 

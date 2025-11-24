@@ -17,9 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final CommentKafkaProducer commentKafkaProducer;
 
-    public CommentService(CommentRepository commentRepository) {
+    public CommentService(CommentRepository commentRepository, CommentKafkaProducer commentKafkaProducer) {
         this.commentRepository = commentRepository;
+        this.commentKafkaProducer = commentKafkaProducer;
     }
 
     public List<Comment> getAllComments() {
@@ -31,7 +33,7 @@ public class CommentService {
     }
 
     public List<Comment> getCommentByServiceId(Long serviceId) {
-        return commentRepository.findByServiceId(serviceId);
+        return commentRepository.findByServiceIdHash(serviceId);
     }
 
     public List<Comment> getCommentByProfileId(Long profileId) {
@@ -39,14 +41,19 @@ public class CommentService {
     }
 
     public Comment createComment(Comment comment) {
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+        // Publicar comentario a Kafka
+        commentKafkaProducer.publishComment(savedComment);
+        return savedComment;
     }
 
     public Comment updateComment(Long id, Comment updatedComment) {
         if (commentRepository.existsById(id)) {
             updatedComment.setId(id);
-            commentRepository.save(updatedComment);
-            return updatedComment;
+            Comment savedComment = commentRepository.save(updatedComment);
+            // Publicar comentario actualizado a Kafka
+            commentKafkaProducer.publishComment(savedComment);
+            return savedComment;
         }
         return null;
     }
@@ -97,7 +104,8 @@ public class CommentService {
 
         // Crear el comentario
         Comment comment = new Comment();
-        comment.setServiceId(serviceLongId);
+        comment.setServiceUuid(serviceUUID.toString());
+        comment.setServiceIdHash(serviceLongId);
         comment.setProfileId(commentDTO.getProfileId());
         comment.setRating(commentDTO.getRating());
         comment.setContent(commentDTO.getContent());
@@ -105,6 +113,9 @@ public class CommentService {
         Comment savedComment = commentRepository.save(comment);
         log.info("Comentario creado exitosamente con ID: {} para servicio: {}",
                 savedComment.getId(), service.getName());
+
+        // Publicar comentario a Kafka
+        commentKafkaProducer.publishComment(savedComment);
 
         return savedComment;
     }

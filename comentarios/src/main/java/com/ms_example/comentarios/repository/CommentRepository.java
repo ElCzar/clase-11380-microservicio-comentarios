@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 import com.ms_example.comentarios.model.Comment;
 import java.util.List;
 
-
 @Repository
-public interface CommentRepository extends JpaRepository<Comment, Long>{
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    List<Comment> findByServiceId(Long serviceId);
+    List<Comment> findByServiceIdHash(Long serviceIdHash);
+
     List<Comment> findByProfileId(Long profileId);
-     
+
 }

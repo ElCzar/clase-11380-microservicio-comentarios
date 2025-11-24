@@ -48,6 +48,10 @@ spring:
         serviceRequest-out-0:
           destination: service-request-topic
           content-type: application/json
+        # Producer binding for comment responses TO marketplace
+        commentResponse-out-0:
+          destination: comments-response
+          content-type: application/json
 
 server:
   port: 8082  
@@ -78,6 +82,7 @@ kafka:
   topics:
     service-request: service-request-topic
     service-response: service-response-topic
+    comments-response: comments-response
 
 management:
   endpoints:

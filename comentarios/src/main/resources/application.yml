@@ -19,17 +19,17 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
+          jwk-set-uri: http://10.43.103.30:8180/realms/microservices-ecosystem/protocol/openid-connect/certs
   
   kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:10.43.103.40:9092}
 
   cloud:
     stream:
       # General Kafka Configuration
       kafka:
         binder:
-          brokers: localhost:9092
+          brokers: 10.43.103.40:9092
           auto-create-topics: true
           configuration:
             "[key.serializer]": org.apache.kafka.common.serialization.StringSerializer
@@ -60,7 +60,7 @@ server:
 eureka:
     client:
         service-url:
-            defaultZone: http://localhost:8761/eureka/
+            defaultZone: http://10.43.103.229:8761/eureka/
         register-with-eureka: true
     instance:
         prefer-ip-address: true
@@ -68,7 +68,7 @@ eureka:
 # Keycloak Configuration
 keycloak:
   realm: microservices-ecosystem
-  auth-server-url: http://localhost:8180
+  auth-server-url: http://10.43.103.30:8180
   ssl-required: none
   resource: ordenpago-service
   credentials:
